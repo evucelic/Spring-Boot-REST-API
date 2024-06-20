@@ -1,29 +1,31 @@
 package com.example.springbootrest.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Proizvod {
+@JsonDeserialize(using = Parser.class)
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String imageUrl;
     private String name;
-    private Double cijena;
-    private String opis;
+    private Double price;
+    private String description;
     private String category;
 
-    public Proizvod(){}
-    public Proizvod(Long id, String imageUrl, String name, Double cijena, String opis, String category) {
+    public Product(){}
+    public Product(Long id, String imageUrl, String name, Double price, String description, String category) {
         this.id = id;
         this.imageUrl = imageUrl;
         this.name = name;
-        this.cijena = cijena;
-        this.opis = opis;
+        this.price = price;
+        this.description = description;
         this.category = category;
     }
 
@@ -51,20 +53,20 @@ public class Proizvod {
         this.name = name;
     }
 
-    public Double getCijena() {
-        return cijena;
+    public Double getprice() {
+        return price;
     }
 
-    public void setCijena(Double cijena) {
-        this.cijena = cijena;
+    public void setprice(Double price) {
+        this.price = price;
     }
 
-    public String getOpis() {
-        return opis.length() < 100 ? opis : opis.substring(0,100);
+    public String getdescription() {
+        return description.length() < 100 ? description : description.substring(0,100);
     }
 
-    public void setOpis(String opis) {
-        this.opis = opis;
+    public void setdescription(String description) {
+        this.description = description;
     }
 
     public String getCategory() {
