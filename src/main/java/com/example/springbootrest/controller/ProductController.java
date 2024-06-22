@@ -24,11 +24,6 @@ public class ProductController {
         this.productService = productService;
         this.productRepository = productRepository;
     }
-    @GetMapping("/products/sync")
-    public ResponseEntity<Void> syncProducts() {
-        productService.syncFromWebsite();
-        return ResponseEntity.ok().build();
-    }
 
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getAllProducts() {
@@ -42,7 +37,7 @@ public class ProductController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/products/filter")
+    @GetMapping("/products/")
     public ResponseEntity<List<Product>> getProductsByFilter(@RequestParam List<String> key,
                                                              @RequestParam List<String> operation,
                                                              @RequestParam List<String> value) {

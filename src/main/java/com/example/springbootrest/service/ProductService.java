@@ -6,6 +6,7 @@ import com.example.springbootrest.specification.FilterSpecification;
 import com.example.springbootrest.specification.SearchCriteria;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,10 @@ public class ProductService {
         }
 
         productRepository.saveAll(products);
+    }
+    @PostConstruct
+    public void syncOnServerStart(){
+        syncFromWebsite();
     }
 
     public List<Product> searchProducts(List<SearchCriteria> criteriaList){
