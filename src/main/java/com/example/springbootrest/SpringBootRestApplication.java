@@ -2,9 +2,10 @@ package com.example.springbootrest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class}) // ne treba nam baza podataka za ovaj zadatak
+@SpringBootApplication
+@EnableJpaRepositories(basePackages = "com.example.springbootrest.repository")
 public class SpringBootRestApplication {
 
 	public static void main(String[] args) {
