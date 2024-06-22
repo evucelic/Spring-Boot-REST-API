@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -53,14 +54,14 @@ public class ProductService {
     public void syncOnServerStart(){
         syncFromWebsite();
     }
-
+    @Cacheable(value= "productsByFilter", key = "#criteriaList")
     public List<Product> searchProductsByFilter(List<SearchCriteria> criteriaList){
 
         if (criteriaList.isEmpty()) return productRepository.findAll();
 
         Set<String> keys = new HashSet<>();
         for (SearchCriteria criteria : criteriaList){
-            if (!criteria.getKey().equalsIgnoreCase("category") || !criteria.getKey().equalsIgnoreCase("price"))
+            if (!criteria.getKey().equalsIgnoreCase("category") && !criteria.getKey().equalsIgnoreCase("price"))
                 throw new IllegalArgumentException("Invalid filter arguments");
             String keyOperationPair = criteria.getKey() + ":" + criteria.getOperation();
             if (!keys.add(keyOperationPair)) {
@@ -72,7 +73,7 @@ public class ProductService {
         return productRepository.findAll(specification);
     }
 
-
+    @Cacheable(value = "productsByName", key = "#nameCriteria")
     public List<Product> searchProductsByName(SearchCriteria nameCriteria){
         Specification<Product> specification = new SearchSpecification(nameCriteria);
         return productRepository.findAll(specification);
