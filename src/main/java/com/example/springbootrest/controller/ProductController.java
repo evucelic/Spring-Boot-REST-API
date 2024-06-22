@@ -37,7 +37,7 @@ public class ProductController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/products/")
+    @GetMapping("/products/filter")
     public ResponseEntity<List<Product>> getProductsByFilter(@RequestParam List<String> key,
                                                              @RequestParam List<String> operation,
                                                              @RequestParam List<String> value) {
@@ -45,6 +45,12 @@ public class ProductController {
         for (int i = 0; i < key.size(); i++) {
             criteriaList.add(new SearchCriteria(key.get(i), operation.get(i), value.get(i)));
         }
-        return ResponseEntity.ok(productService.searchProducts(criteriaList));
+        return ResponseEntity.ok(productService.searchProductsByFilter(criteriaList));
+    }
+
+    @GetMapping("/products/search")
+    public ResponseEntity<List<Product>> getProductsBySearch(@RequestParam String name) {
+        SearchCriteria nameCriteria = new SearchCriteria("name", ":", name);
+        return ResponseEntity.ok(productService.searchProductsByName(nameCriteria));
     }
 }

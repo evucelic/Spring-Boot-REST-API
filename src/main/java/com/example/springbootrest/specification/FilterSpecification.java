@@ -7,30 +7,36 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
-public class FilterSpecification implements Specification<Product>{
-    private SearchCriteria criteria;
+import java.util.List;
 
-    public FilterSpecification(SearchCriteria criteria){
-        this.criteria = criteria;
+public class FilterSpecification implements Specification<Product>{
+    private final List<SearchCriteria> criteriaList;
+
+    public FilterSpecification(List<SearchCriteria> criteriaList){
+        this.criteriaList = criteriaList;
     }
     @Override
     public Predicate toPredicate(Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        if (criteria.getOperation().equalsIgnoreCase(">")){
-            return criteriaBuilder.greaterThanOrEqualTo(root.<String> get(criteria.getKey()), criteria.getValue().toString());
-        }
 
-        else if (criteria.getOperation().equalsIgnoreCase("<")){
-            return criteriaBuilder.lessThanOrEqualTo(root.<String> get(criteria.getKey()), criteria.getValue().toString());
-        }
+        Predicate predicate = criteriaBuilder.conjunction();
 
-        else if(criteria.getOperation().equalsIgnoreCase(":")) {
-            if (root.get(criteria.getKey()).getJavaType() == String.class) {
-                return criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
-            } else {
-                return criteriaBuilder.equal(root.get(criteria.getKey()), criteria.getValue());
+        for (SearchCriteria criteria : criteriaList){
+            if ("category".equalsIgnoreCase(criteria.getKey())){
+                if (criteria.getOperation().equalsIgnoreCase(":")){
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get(criteria.getKey()), criteria.getValue().toString()));
+                }
+            }
+            else if ("price".equalsIgnoreCase(criteria.getKey())){
+                if (criteria.getOperation().equalsIgnoreCase(">")){
+                    predicate  = criteriaBuilder.and(predicate, criteriaBuilder.greaterThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue().toString()));
+                }
+
+                else if (criteria.getOperation().equalsIgnoreCase("<")){
+                    predicate  = criteriaBuilder.and(predicate, criteriaBuilder.lessThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue().toString()));
+                }
             }
         }
 
-        return null;
+        return predicate;
     }
 }
