@@ -16,8 +16,8 @@ public class SearchSpecification implements Specification<Product> {
 
     @Override
     public Predicate toPredicate(Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        if ("name".equalsIgnoreCase(nameCriteria.getKey()) && nameCriteria.getOperation().equalsIgnoreCase(":") && nameCriteria.getValue() != null){
-            return criteriaBuilder.like(root.get(nameCriteria.getKey()), "%" + nameCriteria.getValue().toString() + "%");
+        if ("name".equalsIgnoreCase(nameCriteria.getKey()) && nameCriteria.getOperation().equalsIgnoreCase(":") && nameCriteria.getValue() != null) {
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + nameCriteria.getValue().toString().toLowerCase() + "%");
         }
         return null;
     }

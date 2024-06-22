@@ -1,5 +1,4 @@
 package com.example.springbootrest.service;
-
 import com.example.springbootrest.model.Product;
 import com.example.springbootrest.repository.ProductRepository;
 import com.example.springbootrest.specification.FilterSpecification;
@@ -49,6 +48,7 @@ public class ProductService {
         }
 
         productRepository.saveAll(products);
+        System.out.printf("Synced %d products from website%n", products.size());
     }
     @PostConstruct
     public void syncOnServerStart(){
@@ -76,7 +76,9 @@ public class ProductService {
     @Cacheable(value = "productsByName", key = "#nameCriteria")
     public List<Product> searchProductsByName(SearchCriteria nameCriteria){
         Specification<Product> specification = new SearchSpecification(nameCriteria);
-        return productRepository.findAll(specification);
+        List<Product> products = productRepository.findAll(specification);
+        System.out.printf("Found %d products with name containing '%s'%n", products.size(), nameCriteria.getValue());
+        return products;
     }
     public List<Product> getAllProducts() {
         return productRepository.findAll();
