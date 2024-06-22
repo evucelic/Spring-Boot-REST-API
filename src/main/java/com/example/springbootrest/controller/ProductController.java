@@ -1,66 +1,55 @@
 package com.example.springbootrest.controller;
 
 import com.example.springbootrest.model.Product;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.springbootrest.repository.ProductRepository;
+import com.example.springbootrest.service.ProductService;
+import com.example.springbootrest.specification.SearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.*;
+
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
 public class ProductController {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final ProductService productService;
+    private final ProductRepository productRepository;
 
     @Autowired
-    private ObjectMapper objectMapper;
-    private static final String BASE_URL = "https://dummyjson.com";
+    public ProductController(ProductService productService, ProductRepository productRepository) {
+        this.productService = productService;
+        this.productRepository = productRepository;
+    }
+    @GetMapping("/products/sync")
+    public ResponseEntity<Void> syncProducts() {
+        productService.syncFromWebsite();
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts() {
-        String url = BASE_URL + "/products";
-        ResponseEntity<JsonNode> responseEntity = restTemplate.getForEntity(url, JsonNode.class);
-        JsonNode productsNode = Objects.requireNonNull(responseEntity.getBody()).get("products");
-        List<Product> products = new ArrayList<>();
-
-        for (JsonNode node : productsNode) {
-            try {
-                Product product = objectMapper.treeToValue(node, Product.class);
-                products.add(product);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return ResponseEntity.ok(products);
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<Product> getProductsById(@PathVariable Long id){
-        String url = BASE_URL + "/products/" + id;
-        ResponseEntity<JsonNode> responseEntity = restTemplate.getForEntity(url, JsonNode.class);
-        JsonNode productNode = responseEntity.getBody();
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        return productRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
-        if (productNode == null) {
-            return ResponseEntity.notFound().build();
+    @GetMapping("/products/filter")
+    public ResponseEntity<List<Product>> getProductsByFilter(@RequestParam List<String> key,
+                                                             @RequestParam List<String> operation,
+                                                             @RequestParam List<String> value) {
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        for (int i = 0; i < key.size(); i++) {
+            criteriaList.add(new SearchCriteria(key.get(i), operation.get(i), value.get(i)));
         }
-
-        try {
-            Product product = objectMapper.treeToValue(productNode, Product.class);
-            return ResponseEntity.ok(product);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
-        }
+        return ResponseEntity.ok(productService.searchProducts(criteriaList));
     }
 }
