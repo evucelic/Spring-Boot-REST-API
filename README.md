@@ -1,4 +1,7 @@
 # Spring Boot REST Middleware
+KING ICT Akademija prijemni zadatak
+> Middleware s 4 endpointa : za dohvaćanje svih proizvoda, proizvoda s specifičnim ID-om, proizvoda filtriranih po kategoriji i/ili cijeni, proizvoda filtriranih po imenu \
+Podaci se dohvaćaju s [dummyjson.com](dummyjson.com)
 
 ## Pokretanje aplikacije
 
