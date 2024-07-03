@@ -7,7 +7,7 @@ Podaci se dohvaćaju s [dummyjson.com](dummyjson.com)
 
 - Klonirajte repozitorij i pozicionirajte se unutar direktorija aplikacije
 ```sh
-git clone https://github.com/evucelic/SpringBootREST.git
+git clone https://github.com/evucelic/Spring-Boot-REST-API.git
 cd SpringBootREST
 ```
 - Otvorite projekt u IDE po izboru i stavite SDK projekta na JDK 17, potrebno je imati instaliran gradle
