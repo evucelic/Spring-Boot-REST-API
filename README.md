@@ -7,8 +7,8 @@ Podaci se dohvaćaju s [dummyjson.com](dummyjson.com)
 
 - Klonirajte repozitorij i pozicionirajte se unutar direktorija aplikacije
 ```sh
-git clone https://github.com/evucelic/Spring-Boot-REST-API.git
-cd Spring-Boot-REST-API
+git clone https://github.com/evucelic/Spring-Boot-REST-API.git SpringBootREST
+cd SpringBootREST
 ```
 - Otvorite projekt u IDE po izboru i stavite SDK projekta na JDK 17, potrebno je imati instaliran gradle
 
@@ -28,6 +28,14 @@ Nakon ovoga, aplikacija se vrti lokalno na portu 8080. Zaustavljanje kontejnera 
 docker ps // nađi ID kontejnera
 docker stop <ID_kontejnera>
 ```
+
+**Troubleshooting** \
+Ako Docker ne želi runnati ./gradlew clean build jer ste u windows power shell-u , to je zato što shell skripte imaju drukčije line endings od power shella. Obrišite klonirani repozitorij, pokrenite slijedeću komandu:
+```
+git config --global core.autocrlf input
+```
+Opet klonirajte repozitorij i pokrenite docker build
+
 
 ### **Gradle** 
 - Kako bi lokalno pokrenuli projekt koristeći gradle, treba izgraditi projekt naredbom:
